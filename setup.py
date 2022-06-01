@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='kb-manager',
-      version='0.1.6',
+      version='0.1.6x',
       description='A minimalist knowledge base manager',
       keywords='kb',
       author='gnc',
@@ -36,3 +36,10 @@ setup(name='kb-manager',
            ]
       },
       )
+
+# local test:
+# cd ~/kb-source
+# python3 -m kb list
+
+# local test with install:
+# python3 -m pip install -e /home/leo/kb-source/

@@ -136,5 +136,11 @@ def git_init(repo_path):
 
 def show_info(repo_path):
     repo = git.cmd.Git(repo_path)
-    print("Remote repository:")
+    print("\n-----Remote repository-----(git remote -v)")
     print(repo.execute(["git", "remote", "-v"]))
+    print("\n-----Git status-----(git status --porcelain)")
+    print(repo.execute(["git", "status", "--porcelain"]))
+    print("\n-----Branch info-----(git branch -av)")
+    print(repo.execute(["git", "branch", "-av"]))
+    print("\n-----Logs-----(git log --oneline -n10 --graph)")
+    print(repo.execute(["git", "log", "--oneline", "-n10", "--graph"]))
