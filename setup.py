@@ -1,45 +1,39 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 import io
-from setuptools import setup, find_packages
 
+from setuptools import find_packages, setup
 
-setup(name='kb-manager',
-      version='0.1.6x',
-      description='A minimalist knowledge base manager',
-      keywords='kb',
-      author='gnc',
-      author_email='nebbionegiuseppe@gmail.com',
-      url='https://github.com/gnebbia/kb',
-      download_url='https://github.com/gnebbia/kb/archive/v0.1.6.tar.gz',
-      license='GPLv3',
-      long_description=io.open(
-          './docs/README.md', 'r', encoding='utf-8').read(),
-      long_description_content_type="text/markdown",
-      platforms='any',
-      zip_safe=False,
-      # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      classifiers=[ 'Programming Language :: Python',
-                    'Programming Language :: Python :: 3',
-                    'Programming Language :: Python :: 3.6',
-                    'Programming Language :: Python :: 3.7',
-                    'Programming Language :: Python :: 3.8',
-                    'Operating System :: OS Independent',
-                   ],
-      packages=find_packages(exclude=('tests',)),
-      include_package_data=True,
-      install_requires=["colored","toml","attr","attrs","gitpython"],
-      python_requires='>=3.6',
-      entry_points={
-           'console_scripts':[
-               'kb = kb.main:main',
-           ]
-      },
-      )
-
-# local test:
-# cd ~/kb-source
-# python3 -m kb list
-
-# local test with install:
-# python3 -m pip install -e /home/leo/kb-source/
+setup(
+    name="kb-manager",
+    version="0.1.6",
+    description="A minimalist knowledge base manager",
+    keywords="kb",
+    author="gnc",
+    author_email="nebbionegiuseppe@gmail.com",
+    url="https://github.com/gnebbia/kb",
+    download_url="https://github.com/gnebbia/kb/archive/v0.1.6.tar.gz",
+    license="GPLv3",
+    long_description=io.open("./docs/README.md", "r", encoding="utf-8").read(),
+    long_description_content_type="text/markdown",
+    platforms="any",
+    zip_safe=False,
+    # http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Operating System :: OS Independent",
+    ],
+    packages=find_packages(exclude=("tests",)),
+    include_package_data=True,
+    install_requires=["colored", "toml", "attr", "attrs", "gitpython", "rich"],
+    python_requires=">=3.6",
+    entry_points={
+        "console_scripts": [
+            "kb = kb.main:main",
+        ]
+    },
+)
