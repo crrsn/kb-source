@@ -140,8 +140,8 @@ def add_file_to_kb(
         template = args["template"]
     elif fs.is_md_file(fname):
         template = "markdown"
-        if args["title"] is None:
-            title = Path(fname).stem
+        #if args["title"] is None:
+        #    title = Path(fname).stem
     else:
         template = "default"
 
