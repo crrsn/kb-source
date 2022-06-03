@@ -17,7 +17,29 @@ from kb.config import DEFAULT_CONFIG as config
 import kb.filesystem as fs
 from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET
 from kb.entities.artifact import Artifact
+import re
 
+# for count_zh_word fun used to check chinese word count
+zh_pattern = re.compile(u'[\u4e00-\u9fff]+')
+
+
+def count_zh_word(word):
+    '''
+        count the chinese word number
+    Args:
+        word: input string
+
+    Returns:
+        num_zh: number of chinese word
+    '''
+
+    global zh_pattern
+    match = zh_pattern.search(word)
+    num_zh = 0
+    if match:
+        num_zh = len(re.findall(zh_pattern, word)[0])
+
+    return num_zh
 
 def generate_grep_header(
         grep_result: List[Artifact],
@@ -38,14 +60,16 @@ def generate_grep_header(
     Returns:
     A string representing the header for the list of artifacts
     """
+
     if not grep_result:
         return
 
     min_length = 20
     len_id = max(len(str(len(grep_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in grep_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in grep_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in grep_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in grep_result]), min_length)
     len_tags = max(
@@ -92,8 +116,9 @@ def generate_grep_header_verbose(
     sec_min_length = 10
     len_id = max(len(str(len(grep_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in grep_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in grep_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in grep_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in grep_result]), min_length)
     len_tags = max(
@@ -138,6 +163,7 @@ def print_grep_result(
     if not grep_result:
         return
 
+    print()
     print(generate_grep_header(grep_result, hits_list, color=color))
     print()
 
@@ -145,8 +171,9 @@ def print_grep_result(
 
     len_id = max(len(str(len(grep_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in grep_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in grep_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in grep_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in grep_result]), min_length)
     len_tags = max(
@@ -161,18 +188,29 @@ def print_grep_result(
         hits_id = view_id
         hits = str(hits_list[hits_id])
 
-        result_line = "   [ {id} ]  {title} {category} {hits} {tags}".format(
-            id=str(view_id).rjust(len_id),
-            title=artifact.title.ljust(len_title),
-            category=artifact.category.ljust(len_categ),
-            hits=hits.ljust(len_hits),
-            tags=tags.ljust(len_tags))
+        num_zh = count_zh_word(artifact.title)
+        if num_zh:
+            # if title contain chinese word, the ljust need -num_zh
+            result_line = "   [ {id} ]  {title} {category} {hits} {tags}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title-num_zh),
+                category=artifact.category.ljust(len_categ),
+                hits=hits.ljust(len_hits),
+                tags=tags.ljust(len_tags))
+        else:
+            result_line = "   [ {id} ]  {title} {category} {hits} {tags}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title),
+                category=artifact.category.ljust(len_categ),
+                hits=hits.ljust(len_hits),
+                tags=tags.ljust(len_tags))
 
         if color and (view_id % 2 == 0):
             print(ALT_BGROUND + result_line + RESET)
         else:
             print(result_line)
 
+    print()
 
 def print_grep_result_verbose(
         grep_result: List[Artifact],
@@ -193,7 +231,8 @@ def print_grep_result_verbose(
     if not grep_result:
         return
 
-    print(generate_grep_header(grep_result, hits_list, color=color))
+    print()
+    print(generate_grep_header_verbose(grep_result, hits_list, color=color))
     print()
 
     min_length = 20
@@ -201,8 +240,9 @@ def print_grep_result_verbose(
 
     len_id = max(len(str(len(grep_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in grep_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in grep_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in grep_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in grep_result]), min_length)
     len_tags = max(
@@ -224,19 +264,33 @@ def print_grep_result_verbose(
         hits_id = view_id
         hits = str(hits_list[hits_id])
 
-        result_line = "   [ {id} ]  {title} {category} {hits} {tags} {author} {status}".format(
-            id=str(view_id).rjust(len_id),
-            title=artifact.title.ljust(len_title),
-            category=artifact.category.ljust(len_categ),
-            hits=hits.ljust(len_hits),
-            tags=tags.ljust(len_tags),
-            author=author.ljust(len_author),
-            status=status.ljust(len_status))
+        num_zh = count_zh_word(artifact.title)
+        if num_zh:
+            # if title contain chinese word, the ljust need -num_zh
+            result_line = "   [ {id} ]  {title} {category} {hits} {tags} {author} {status}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title-num_zh),
+                category=artifact.category.ljust(len_categ),
+                hits=hits.ljust(len_hits),
+                tags=tags.ljust(len_tags),
+                author=author.ljust(len_author),
+                status=status.ljust(len_status))
+        else:
+            result_line = "   [ {id} ]  {title} {category} {hits} {tags} {author} {status}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title),
+                category=artifact.category.ljust(len_categ),
+                hits=hits.ljust(len_hits),
+                tags=tags.ljust(len_tags),
+                author=author.ljust(len_author),
+                status=status.ljust(len_status))
 
         if color and (view_id % 2 == 0):
             print(ALT_BGROUND + result_line + RESET)
         else:
             print(result_line)
+
+    print()
 
 # This function still has to be implemented, this is just a placeholder
 

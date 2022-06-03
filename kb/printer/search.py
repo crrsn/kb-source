@@ -60,8 +60,11 @@ def generate_search_header(
     min_length = 20
     len_id = max(len(str(len(search_result) - 1)), 2)
 
+
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in search_result])
+
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in search_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in search_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in search_result]), min_length)
     len_tags = max(
@@ -100,8 +103,9 @@ def generate_search_header_verbose(
     sec_min_length = 10
     len_id = max(len(str(len(search_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in search_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in search_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in search_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in search_result]), min_length)
     len_tags = max(
@@ -148,8 +152,9 @@ def print_search_result(
     min_length = 20
     len_id = max(len(str(len(search_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in search_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in search_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in search_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in search_result]), min_length)
     len_tags = max(
@@ -167,7 +172,6 @@ def print_search_result(
                 title=artifact.title.ljust(len_title-num_zh),
                 category=artifact.category.ljust(len_categ),
                 tags=tags.ljust(len_tags))
-
         else:
             result_line = " - [ {id} ]  {title} {category} {tags}".format(
                 id=str(view_id).rjust(len_id),
@@ -205,8 +209,9 @@ def print_search_result_verbose(
     sec_min_length = 10
     len_id = max(len(str(len(search_result) - 1)), 2)
 
+    len_title_add_for_zh = max([count_zh_word(art.title) if art.title else 0 for art in search_result])
     len_title = max(
-        max([len(art.title) if art.title else 0 for art in search_result]), min_length)
+        max([len(art.title) if art.title else 0 for art in search_result]), min_length) + len_title_add_for_zh
     len_categ = max(max(
         [len(art.category) if art.category else 0 for art in search_result]), min_length)
     len_tags = max(
