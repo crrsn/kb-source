@@ -22,15 +22,12 @@ zh_pattern = re.compile(u'[\u4e00-\u9fff]+')
 
 def count_zh_word(word):
     '''
-        check string contain chinese word
-            param word:
-            return:
+        count the chinese word number
     Args:
         word: input string
 
-    Returns:    True:   contain chinese word
-                False:  no chinese word
-
+    Returns:
+        num_zh: number of chinese word
     '''
 
     global zh_pattern
@@ -200,6 +197,7 @@ def print_search_result_verbose(
     if not search_result:
         return
 
+    print()
     print(generate_search_header_verbose(search_result, color=color))
     print()
 
@@ -252,7 +250,7 @@ def print_search_result_verbose(
             print(ALT_BGROUND + result_line + RESET)
         else:
             print(result_line)
-
+    print()
 
 def print_search_result_full_mode(
         search_result: List[Artifact],

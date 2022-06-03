@@ -64,6 +64,14 @@ def add(args: Dict[str, str], config: Dict[str, str]):
         # Assign a "default" category if not provided
         category = args["category"] or "default"
 
+        # Assign a "default" template if not provided or not markdown format
+        if args["template"]:
+            template = args["template"]
+        elif fs.is_md_file(title):
+            template = "markdown"
+        else:
+            template = "default"
+
         # Create "category" directory if it does not exist
         category_path = Path(config["PATH_KB_DATA"], category)
         category_path.mkdir(parents=True, exist_ok=True)
@@ -94,7 +102,7 @@ def add(args: Dict[str, str], config: Dict[str, str]):
             tags=args["tags"],
             status=args["status"],
             author=args["author"],
-            template=args["template"],
+            template=template,
         )
         db.insert_artifact(conn, new_artifact)
 
