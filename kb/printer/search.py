@@ -14,7 +14,32 @@ kb printer for search command module
 from typing import List
 from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET
 from kb.entities.artifact import Artifact
+import re
 
+# for count_zh_word fun used to check chinese word count
+zh_pattern = re.compile(u'[\u4e00-\u9fff]+')
+
+
+def count_zh_word(word):
+    '''
+        check string contain chinese word
+            param word:
+            return:
+    Args:
+        word: input string
+
+    Returns:    True:   contain chinese word
+                False:  no chinese word
+
+    '''
+
+    global zh_pattern
+    match = zh_pattern.search(word)
+    num_zh = 0
+    if match:
+        num_zh = len(re.findall(zh_pattern, word)[0])
+
+    return num_zh
 
 def generate_search_header(
         search_result: List[Artifact],
@@ -119,7 +144,7 @@ def print_search_result(
     """
     if not search_result:
         return
-
+    print()
     print(generate_search_header(search_result, color=color))
     print()
 
@@ -137,17 +162,28 @@ def print_search_result(
     for view_id, artifact in enumerate(search_result):
         tags = artifact.tags if artifact.tags else ""
 
-        result_line = " - [ {id} ]  {title} {category} {tags}".format(
-            id=str(view_id).rjust(len_id),
-            title=artifact.title.ljust(len_title),
-            category=artifact.category.ljust(len_categ),
-            tags=tags.ljust(len_tags))
+        num_zh = count_zh_word(artifact.title)
+        if num_zh:
+            # if title contain chinese word, the ljust need -num_zh
+            result_line = " - [ {id} ]  {title} {category} {tags}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title-num_zh),
+                category=artifact.category.ljust(len_categ),
+                tags=tags.ljust(len_tags))
+
+        else:
+            result_line = " - [ {id} ]  {title} {category} {tags}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title),
+                category=artifact.category.ljust(len_categ),
+                tags=tags.ljust(len_tags))
 
         if color and (view_id % 2 == 0):
             print(ALT_BGROUND + result_line + RESET)
         else:
             print(result_line)
 
+    print()
 
 def print_search_result_verbose(
         search_result: List[Artifact],
@@ -191,14 +227,26 @@ def print_search_result_verbose(
         status = artifact.status if artifact.status else ""
         template = artifact.template if artifact.template else ""
 
-        result_line = "   [ {id} ]  {title} {category} {tags} {author} {status} {template}".format(
-            id=str(view_id).rjust(len_id),
-            title=artifact.title.ljust(len_title),
-            category=artifact.category.ljust(len_categ),
-            tags=tags.ljust(len_tags),
-            author=author.ljust(len_author),
-            status=status.ljust(len_status),
-            template=template.ljust(len_template))
+        num_zh = count_zh_word(artifact.title)
+        if num_zh:
+            # if title contain chinese word, the ljust need -num_zh
+            result_line = "   [ {id} ]  {title} {category} {tags} {author} {status} {template}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title-num_zh),
+                category=artifact.category.ljust(len_categ),
+                tags=tags.ljust(len_tags),
+                author=author.ljust(len_author),
+                status=status.ljust(len_status),
+                template=template.ljust(len_template))
+        else:
+            result_line = "   [ {id} ]  {title} {category} {tags} {author} {status} {template}".format(
+                id=str(view_id).rjust(len_id),
+                title=artifact.title.ljust(len_title),
+                category=artifact.category.ljust(len_categ),
+                tags=tags.ljust(len_tags),
+                author=author.ljust(len_author),
+                status=status.ljust(len_status),
+                template=template.ljust(len_template))
 
         if color and (view_id % 2 == 0):
             print(ALT_BGROUND + result_line + RESET)

@@ -72,6 +72,78 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
     help_parser = subparsers.add_parser(
         "help", help="Show help of a particular command"
     )
+    listc_parser = subparsers.add_parser("listc", help="Search for artifacts and sorted by category")
+
+    # test parser
+    listc_parser.add_argument(
+        "query",
+        help="Filter search results by specified title",
+        default="",
+        nargs="?",
+        type=str,
+    )
+    listc_parser.add_argument(
+        "-c",
+        "--category",
+        help="Filter search results by specified category",
+        default=None,
+        type=str,
+    )
+    listc_parser.add_argument(
+        "-g",
+        "--tags",
+        help="""
+        Tags associates to the artifact to search in the form \"tag1;tag2;...;tagN\"
+        """,
+        default=None,
+        type=str,
+    )
+    listc_parser.add_argument(
+        "-a",
+        "--author",
+        help="Filter search results by specified author",
+        default=None,
+        type=str,
+    )
+    listc_parser.add_argument(
+        "-s",
+        "--status",
+        help="Filter search results by specified status",
+        default=None,
+        type=str,
+    )
+    listc_parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Show additional information for the provided results",
+        action="store_true",
+        dest="verbose",
+        default=False,
+    )
+    listc_parser.add_argument(
+        "-f",
+        "--full-identifier",
+        help="Print results in full-identifier mode",
+        action="store_true",
+        dest="full_identifier",
+        default=False,
+    )
+    listc_parser.add_argument(
+        "-n",
+        "--no-color",
+        help="Enabled no-color mode",
+        action="store_true",
+        dest="no_color",
+        default=False,
+    )
+    listc_parser.add_argument(
+        "-p",
+        "--print",
+        help="Print 'Hello World' for test",
+        action="store_true",
+        dest="print",
+        default=False,
+    )
 
     # add parser
     add_parser.add_argument(
