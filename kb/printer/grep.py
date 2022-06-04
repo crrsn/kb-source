@@ -17,29 +17,7 @@ from kb.config import DEFAULT_CONFIG as config
 import kb.filesystem as fs
 from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET
 from kb.entities.artifact import Artifact
-import re
-
-# for count_zh_word fun used to check chinese word count
-zh_pattern = re.compile(u'[\u4e00-\u9fff]+')
-
-
-def count_zh_word(word):
-    '''
-        count the chinese word number
-    Args:
-        word: input string
-
-    Returns:
-        num_zh: number of chinese word
-    '''
-
-    global zh_pattern
-    match = zh_pattern.search(word)
-    num_zh = 0
-    if match:
-        num_zh = len(re.findall(zh_pattern, word)[0])
-
-    return num_zh
+from kb.printer.countzh import count_zh_word
 
 def generate_grep_header(
         grep_result: List[Artifact],
