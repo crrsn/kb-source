@@ -293,9 +293,13 @@ def print_grep_matches(grep_matches, regex, color=True):
 
         if color:
             matched_text = re.sub(r'({})'.format(regex), r'\033[91m\1\033[0m)', matched_text)
-
-        result_line = "\033[95m{path}\033[92m:{line_number}:\033[0m{matched_text}".format(
-            path=path,
-            line_number=line_number,
-            matched_text=matched_text)
+            result_line = "\033[95m{path}\033[92m:{line_number}:\033[0m{matched_text}".format(
+                path=path,
+                line_number=line_number,
+                matched_text=matched_text)
+        else:
+            result_line = "{path}:{line_number}:{matched_text}".format(
+                path=path,
+                line_number=line_number,
+                matched_text=matched_text)
         print(result_line)
