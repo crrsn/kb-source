@@ -15,7 +15,7 @@ import pathlib
 from typing import List
 from kb.config import DEFAULT_CONFIG as config
 import kb.filesystem as fs
-from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET
+from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, RED, MAGENTA, GREEN
 from kb.entities.artifact import Artifact
 from kb.printer.countzh import count_zh_word
 import re
@@ -292,8 +292,11 @@ def print_grep_matches(grep_matches, regex, color=True):
         matched_text = match[2]
 
         if color:
-            matched_text = re.sub(r'({})'.format(regex), r'\033[91m\1\033[0m', matched_text)
-            result_line = "\033[95m{path}\033[92m:{line_number}:\033[0m{matched_text}".format(
+            matched_text = re.sub(r'({})'.format(regex), r'{}\1{}'.format(RED, RESET), matched_text)
+            result_line = "{color1}{path}{color2}:{line_number}:{color3}{matched_text}".format(
+                color1=MAGENTA,
+                color2=GREEN,
+                color3=RESET,
                 path=path,
                 line_number=line_number,
                 matched_text=matched_text)

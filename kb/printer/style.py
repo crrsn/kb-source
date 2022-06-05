@@ -19,3 +19,7 @@ ALT_BGROUND = styler.set_bg('#303030')
 BOLD = styler.set_style('bold')
 UND = styler.set_style('underlined')
 RESET = styler.reset()
+
+RED = '\033[1;31m'
+MAGENTA = '\033[95m'
+GREEN = '\033[92m'

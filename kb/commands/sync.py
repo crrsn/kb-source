@@ -13,10 +13,10 @@ kb export command module
 
 import time
 from typing import Dict
-
+from kb.printer.style import UND, BOLD, UND, RESET, RED, MAGENTA, GREEN
 import git
 import kb.filesystem as fs
-
+import socket
 
 def sync(args: Dict[str, str], config: Dict[str, str]):
     """
@@ -87,7 +87,7 @@ def git_push(repo_path):
         kb_repo = git.Repo(repo_path)
         kb_repo.git.add("--all")
         timestamp = time.strftime("%d/%m/%Y-%H:%M:%S")
-        kb_repo.index.commit("kb synchronization {ts}".format(ts=timestamp))
+        kb_repo.index.commit("[{hostname}] kb synchronization {ts}".format(hostname=socket.gethostname(), ts=timestamp))
         kb_repo.remote(
             name="origin").push(
             refspec="{}:{}".format(
@@ -102,16 +102,23 @@ def git_push(repo_path):
 
 
 def git_pull(repo_path):
-    try:
-        kb_repo = git.Repo(repo_path)
-        origin = kb_repo.remotes.origin
-        origin.pull(origin.refs[0].remote_head)
-        print("Repository correctly synchronized from remote!")
-    except BaseException:
-        print("Some error occurred while pulling the code")
-        print(
-            "Check your internet connection or the existence of the remote repository"
-        )
+
+    repo = git.cmd.Git(repo_path[:-4])
+    _status = repo.execute(["git", "status"])
+    if _status:
+        print(_status)
+        print(RED + "error: The local data is change. Please pull manually!" + RESET)
+    else:
+        try:
+            kb_repo = git.Repo(repo_path)
+            origin = kb_repo.remotes.origin
+            origin.pull(origin.refs[0].remote_head)
+            print("Repository correctly synchronized from remote!")
+        except BaseException:
+            print("Some error occurred while pulling the code")
+            print(
+                "Check your internet connection or the existence of the remote repository"
+            )
 
 
 def git_clone(repo_path):
@@ -146,12 +153,15 @@ def git_init(repo_path):
 
 
 def show_info(repo_path):
+
+    #print(git.cmd.Git(repo_path[:-4]).execute(["git", "fetch", "origin main"]))
+
     repo = git.cmd.Git(repo_path)
-    print("\n-----Remote repository-----(git remote -v)")
+    print("\n" + UND + "Remote repository (git remote -v)" + RESET + '')
     print(repo.execute(["git", "remote", "-v"]))
-    print("\n-----Git status-----(git status --porcelain)")
-    print(repo.execute(["git", "status", "--porcelain"]))
-    print("\n-----Branch info-----(git branch -av)")
+    print("\n" + UND + "Git status (git status --porcelain)" + RESET + '')
+    print(RED + repo.execute(["git", "status", "--porcelain"]) + RESET)
+    print("\n" + UND + "Branch info (git branch -av)" + RESET + '')
     print(repo.execute(["git", "branch", "-av"]))
-    print("\n-----Logs-----(git log --oneline -n10 --graph)")
-    print(repo.execute(["git", "log", "--oneline", "-n10", "--graph"]))
+    print("\n" + UND + "Logs (git log --oneline -n3 --graph)" + RESET + '')
+    print(repo.execute(["git", "log", "--oneline", "-n3", "--graph"]))
