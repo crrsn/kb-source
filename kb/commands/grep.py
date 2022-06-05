@@ -46,7 +46,7 @@ def grep(args: Dict[str, str], config: Dict[str, str]):
     conn = db.create_connection(config["PATH_KB_DB"])
 
     # Get all artifacts
-    rows = db.get_artifacts_by_filter(conn, title="")
+    rows = db.get_artifacts_by_filter(conn, title="", category=args["category"])
 
     # Get all the file paths related to the artifacts in the database
     file_list = [Path(config["PATH_KB_DATA"], r.category, r.title)
@@ -61,7 +61,7 @@ def grep(args: Dict[str, str], config: Dict[str, str]):
     # If user specified --matches -> just show matching lines and exit
     color_mode = not args["no_color"]
     if args["matches"]:
-        printer.print_grep_matches(results, color_mode)
+        printer.print_grep_matches(results, args["regex"], color_mode)
         sys.exit(0)
 
     # Get the list of artifact tuples in the form (category,title)

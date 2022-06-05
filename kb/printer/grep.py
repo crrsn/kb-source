@@ -18,6 +18,7 @@ import kb.filesystem as fs
 from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET
 from kb.entities.artifact import Artifact
 from kb.printer.countzh import count_zh_word
+import re
 
 def generate_grep_header(
         grep_result: List[Artifact],
@@ -273,7 +274,7 @@ def print_grep_result_verbose(
 # This function still has to be implemented, this is just a placeholder
 
 
-def print_grep_matches(grep_matches, color=True):
+def print_grep_matches(grep_matches, regex, color=True):
     """
     Print text associated to grep matches.
 
@@ -291,10 +292,9 @@ def print_grep_matches(grep_matches, color=True):
         matched_text = match[2]
 
         if color:
-            path = BOLD + str(path) + RESET
-            line_number = BOLD + str(line_number) + RESET
+            matched_text = re.sub(r'({})'.format(regex), r'\033[91m\1\033[0m)', matched_text)
 
-        result_line = "{path}:{line_number}:{matched_text}".format(
+        result_line = "\033[95m{path}\033[92m:{line_number}:\033[0m{matched_text}".format(
             path=path,
             line_number=line_number,
             matched_text=matched_text)
