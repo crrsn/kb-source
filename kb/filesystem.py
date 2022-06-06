@@ -19,7 +19,8 @@ import shutil
 import tempfile
 from pathlib import Path
 from typing import List
-
+from kb.printer.style import RESET, GREEN
+import fitz
 
 def list_files(directory: str) -> List[str]:
     """
@@ -291,6 +292,24 @@ def grep_in_files(
 
     matches = list()
     for fname in filelist:
+
+        # grep PDF format
+        try:
+            if fname.name[-3:] == 'pdf':
+                # open the pdf file
+                with fitz.open(fname) as pdf:
+                    # get number of pages
+                    for i_page, pages in enumerate(pdf):
+                        lines = pages.get_text("text").split('\n')
+                        for i, line in enumerate(lines):
+                            match = pattern.search(line)
+                            linenumber = i + 1
+                            if match:
+                                matches.append((fname, linenumber,
+                                                '\b{}@P{}:{}{}'.format(GREEN, i_page+1, RESET, line.strip())))
+        except:
+            continue
+        # grep others format
         try:
             with open(fname) as handle:
                 for i, line in enumerate(handle):
