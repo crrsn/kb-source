@@ -79,8 +79,10 @@ def create_kb_files(config):
     conn = db.create_connection(db_path)
     current_schema_version = db.get_schema_version(conn)
 
-    if current_schema_version == 0:
-        db.migrate_v0_to_v1(conn)
+    # fix the error: sqlite3.OperationalError: duplicate column name: template
+    # remove the migrate_v0_to_V1 function
+    #if current_schema_version == 0:
+    #    db.migrate_v0_to_v1(conn)
 
     # Create "data" directory
     fs.create_directory(data_path)
