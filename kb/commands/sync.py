@@ -104,7 +104,7 @@ def git_push(repo_path):
 def git_pull(repo_path):
 
     repo = git.cmd.Git(repo_path[:-4])
-    _status = repo.execute(["git", "status"])
+    _status = repo.execute(["git", "status", "--porcelain"])
     if _status:
         print(_status)
         print(RED + "error: The local data is change. Please pull manually!" + RESET)
