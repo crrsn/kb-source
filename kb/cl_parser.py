@@ -245,6 +245,14 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
         default=None,
         type=str,
     )
+    edit_parser.add_argument(
+        "-e",
+        "--open-editor",
+        help="Open the file in a text editor (gedit)",
+        action="store_true",
+        dest="gedit",
+        default=False,
+    )
 
     # list parser
     list_parser.add_argument(

@@ -111,7 +111,7 @@ def view_by_id(id_artifact: int,
         tmpfname = fs.get_temp_filepath()
         fs.copy_file(artifact_path, tmpfname)
 
-        shell_cmd = shlex.split(config["EDITOR"]) + [tmpfname]
+        shell_cmd = shlex.split(config["EDITOR"]) + ['-M'] + [tmpfname]
         call(shell_cmd)
         fs.remove_file(tmpfname)
 
@@ -162,7 +162,7 @@ def view_by_name(
             tmpfname = fs.get_temp_filepath()
             fs.copy_file(artifact_path, tmpfname)
 
-            shell_cmd = shlex.split(config["EDITOR"]) + [tmpfname]
+            shell_cmd = shlex.split(config["EDITOR"]) + ['-M'] + [tmpfname]
             call(shell_cmd)
             fs.remove_file(tmpfname)
             sys.exit(0)

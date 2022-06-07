@@ -20,6 +20,10 @@ import kb.config as conf
 import kb.db as db
 import kb.filesystem as fs
 
+def is_tool(name):
+    """Check whether `name` is on PATH."""
+    from distutils.spawn import find_executable
+    return find_executable(name) is not None
 
 def init(config):
     """

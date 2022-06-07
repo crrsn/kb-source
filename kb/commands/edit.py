@@ -21,6 +21,7 @@ import kb.history as history
 import kb.initializer as initializer
 
 
+
 def edit(args: Dict[str, str], config: Dict[str, str]):
     """
     Edit the content of an artifact.
@@ -39,6 +40,9 @@ def edit(args: Dict[str, str], config: Dict[str, str]):
                       EDITOR            - the editor program to call
     """
     initializer.init(config)
+
+    if args["gedit"] & initializer.is_tool("gedit"):
+        config["EDITOR"] = 'gedit'
 
     # if an ID is specified, load artifact with that ID
     if args["id"]:
