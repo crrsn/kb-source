@@ -45,8 +45,13 @@ DEFAULT_CONFIG = {
 
 
 DEFAULT_TEMPLATE = {
-    "TITLES": ("^#.*", "blue"),
-    "WARNINGS": ("^!.*", "yellow"),
+    "TITLES": ("^#.*", "yellow"),
+    "WARNINGS": ("^!.*", "red"),
+    "COMMENTS": ("//.*", "green"),
+    "ARG_TYPE1": (" +--[a-zA-Z]+ ", "magenta"),
+    "ARG_TYPE2": ("--[a-zA-Z]+-+[a-zA-Z]+ ", "magenta"),
+    "ARG_TYPE3": (" +--[a-zA-Z\r\n]+", "magenta"),
+    "ARG_TYPE4": ("--[a-zA-Z]+-+[a-zA-Z\r\n]+", "magenta"),
 }
 
 MARKDOWN_TEMPLATE = {
