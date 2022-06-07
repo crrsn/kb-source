@@ -157,11 +157,16 @@ def show_info(repo_path):
     #print(git.cmd.Git(repo_path[:-4]).execute(["git", "fetch", "origin main"]))
 
     repo = git.cmd.Git(repo_path)
-    print("\n" + UND + "Remote repository (git remote -v)" + RESET + '')
-    print(repo.execute(["git", "remote", "-v"]))
-    print("\n" + UND + "Git status (git status --porcelain)" + RESET + '')
+
+    print("\n" + UND + "Git status (git status --porcelain)" + RESET)
+    print(GREEN + "(M: Modified / D: Deleted / ?? Untracked new file)" + RESET)
     print(RED + repo.execute(["git", "status", "--porcelain"]) + RESET)
+
     print("\n" + UND + "Branch info (git branch -av)" + RESET + '')
     print(repo.execute(["git", "branch", "-av"]))
-    print("\n" + UND + "Logs (git log --oneline -n3 --graph)" + RESET + '')
+
+    print("\n" + UND + "Remote repository (git remote -v)" + RESET)
+    print(repo.execute(["git", "remote", "-v"]))
+
+    print("\n" + UND + "Logs (git log --oneline -n3 --graph)" + RESET)
     print(repo.execute(["git", "log", "--oneline", "-n3", "--graph"]))
