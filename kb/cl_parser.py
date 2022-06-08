@@ -16,6 +16,7 @@ __all__ = ()
 import argparse
 import sys
 from typing import Sequence
+import shtab  # for completion magic
 
 from kb import __version__
 
@@ -37,6 +38,7 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="kb", description="A knowledge base organizer"
     )
+    shtab.add_argument_to(parser, ["-s", "--print-completion"])  # magic!
 
     parser.add_argument(
         "--version",
