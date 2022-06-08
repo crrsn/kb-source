@@ -72,6 +72,11 @@ def sync(args: Dict[str, str], config: Dict[str, str]):
             print("No local git repository has been instantiated!")
             return
         show_info(config["PATH_KB"])
+    elif operation == "reset":
+        if not is_local_git_repo_initialized(config["PATH_KB_GIT"]):
+            print("No local git repository has been instantiated!")
+            return
+        git_reset(config["PATH_KB"])
     else:
         print("Error: No valid operation has been specified")
         return
@@ -80,6 +85,29 @@ def sync(args: Dict[str, str], config: Dict[str, str]):
 def is_local_git_repo_initialized(git_path):
     if fs.is_directory(git_path):
         return True
+
+def git_reset(repo_path):
+
+    repo = git.cmd.Git(repo_path)
+    _status = repo.execute(["git", "status", "--porcelain"])
+
+    if _status:
+        print(UND + "Git status (git status --porcelain)" + RESET)
+        print(GREEN + "(M: Modified / D: Deleted / ?? Untracked new file)" + RESET)
+        print(RED + _status + RESET)
+
+        answer = input("Above changed (modified or new created) data will be reset. " +
+                       RED + "\nAre you sure you want to reset? [y/n]" + RESET)
+        confirm = answer.lower() not in ["y", "yes"]
+        if confirm:
+            print("No data was reset")
+            return
+        repo = git.Repo(repo_path)
+        repo.git.reset('--hard')
+        print("Repository correctly reset!")
+
+    else:
+        print("No need to reset. Your repository is clean.")
 
 
 def git_push(repo_path):
@@ -106,8 +134,12 @@ def git_pull(repo_path):
     repo = git.cmd.Git(repo_path[:-4])
     _status = repo.execute(["git", "status", "--porcelain"])
     if _status:
-        print(_status)
-        print(RED + "error: The local data is change. Please pull manually!" + RESET)
+        print(RED + "Pull Fault: The local data is change. Please remove it and try again!" + RESET)
+        print(RED + "Using 'git reset --hard' to reset the repository." + RESET)
+        print(UND + "Git status (git status --porcelain)" + RESET)
+        print(GREEN + "(M: Modified / D: Deleted / ?? Untracked new file)" + RESET)
+        print(RED + _status + RESET)
+
     else:
         try:
             kb_repo = git.Repo(repo_path)

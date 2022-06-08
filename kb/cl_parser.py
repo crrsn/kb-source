@@ -685,9 +685,10 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
         help="""Use \"init\" to initialize the remote repo,
                 Use \"push\" to git push (write local -> remote) the knowledge base,
                 Use \"pull\" to git pull (retrieve remote -> local) the remote kb,
+                Use \"reset\" to reset the change (do it when pull fault),
                 Use \"info\" to show information about the repository
              """,
-        choices=["init", "push", "pull", "info"],
+        choices=["init", "push", "pull", "reset", "info"],
     )
 
     help_parser.add_argument(
