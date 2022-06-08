@@ -30,6 +30,7 @@ from kb.commands.update import update
 from kb.commands.view import view
 from kb.config import DEFAULT_CONFIG
 from kb.commands.listc import listc
+from kb.commands.info import info
 
 COMMANDS = {
     "add": add,
@@ -45,6 +46,7 @@ COMMANDS = {
     "template": template,
     "sync": sync,
     "listc": listc,
+    "info": info,
 }
 
 

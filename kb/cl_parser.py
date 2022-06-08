@@ -74,6 +74,8 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
     help_parser = subparsers.add_parser(
         "help", help="Show help of a particular command"
     )
+    info_parser = subparsers.add_parser("info", help="Show the kb database info")
+
     listc_parser = subparsers.add_parser("listc", help="Search for artifacts and sorted by category")
 
     # test parser
@@ -676,6 +678,23 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
         help="Only remove kb database",
         action="store_true",
         dest="db",
+        default=False,
+    )
+
+    # erase parser
+    info_parser.add_argument(
+        "query",
+        help="Filter search results by specified title",
+        default="",
+        nargs="?",
+        type=str,
+    )
+
+    info_parser.add_argument(
+        "--path",
+        help="Only show path of kb location",
+        action="store_true",
+        dest="show_path",
         default=False,
     )
 
