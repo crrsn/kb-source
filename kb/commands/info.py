@@ -10,12 +10,13 @@ kb show info command module
 :Copyright: © 2020, gnc.
 :License: GPLv3 (see /LICENSE).
 """
-
 from typing import Dict
 import kb.db as db
 import kb.initializer as initializer
-import kb.printer.search as printer
-from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET
+from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, BROWN
+import os
+import time
+from datetime import datetime
 
 
 def info(args: Dict[str, str], config: Dict[str, str]):
@@ -48,40 +49,128 @@ def info(args: Dict[str, str], config: Dict[str, str]):
     # 'PATH_KB_MARKDOWN_TEMPLATE': '/home/leo/.local/share/kb/templates/markdown', 'DB_SCHEMA_VERSION': 1,
     # 'EDITOR': 'vim', 'INITIAL_CATEGORIES': ['default']}
 
-
     if args["show_path"]:
-        print(config["PATH_KB"])
-        print(config["PATH_KB_DB"])
-
+        print(BROWN + "\nPath of KB folder: " + RESET + config["PATH_KB"])
+        print(BROWN + "Path of KB Database File: " + RESET + config["PATH_KB_DB"])
+        print(BROWN + "Show All Configurations:" + RESET)
         print(config)
-
+        print()
     else:
-        None_list = None
         conn = db.create_connection(config["PATH_KB_DB"])
         rows = db.get_artifacts_by_filter(
             conn,
-            title=args["query"],
-            category=None_list,
-            tags=None_list,
-            status=None_list,
-            author=None_list)
+            title="",
+            category=None,
+            tags=None,
+            status=None,
+            author=None)
 
         # rows.sort(key=lambda x: x[1])
         artifacts = sorted(rows, key=lambda x: x.category)
+        # --------------------------------------------------------------
+        print("\n" + UND + "KB Database Path" + RESET)
+        print(BROWN + config["PATH_KB"] + RESET)
+        # --------------------------------------------------------------
+        print("\n" + UND + "Database Information" + RESET)
+        print(BROWN + "Number of artifacts: " + str(len(artifacts)) + RESET)
+        fileTypeCountDict = dict()
+        for artifact in artifacts:
+            filename, file_extension = os.path.splitext(artifact.title)
+            file_extension = file_extension.replace('.', '')
+            # if file without extension, that is txt
+            if file_extension == '':
+                file_extension = 'txt'
+            if file_extension not in fileTypeCountDict:
+                # new extension, create a key/value for it
+                fileTypeCountDict[file_extension] = 1
+            else:
+                # exist extension, value+1
+                fileTypeCountDict[file_extension] += 1
 
-        #printer.print_search_result(artifacts, True)
+        d_view = [(v, k) for k, v in fileTypeCountDict.items()]
+        d_view.sort(reverse=True)  # natively sort tuples by first element
+        for v, k in d_view:
+            print('  {}:\t{}'.format(k, v))
 
-        print("\n" + UND + "Database information" + RESET)
-        print("Number of artifacts: " + str(len(artifacts)))
+        print("Total size: {:.2f} MB (only data folder)".format(get_dir_size(config["PATH_KB_DATA"]) / 1024 / 1024))
+        print("Total size: {:.2f} MB (with git)".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024))
 
-        count_jpg = 0
-        count_pdf = 0
-        for view_id, artifact in enumerate(artifacts):
+        # --------------------------------------------------------------
+        print("\n" + UND + "Last Five Modified File Name & Modified Timestamp" + RESET)
+        last_modified_file, last_modified_time, age = get_last_modify(config["PATH_KB_DATA"], args["print_number"])
 
-            if (artifact.title.endswith('jpg')):
-                count_jpg += 1
-            if (artifact.title.endswith('pdf')):
-                count_pdf += 1
+        for i in range(0, len(last_modified_file)):
+            result_line = "[{}] {} ({})\n".format(i+1, last_modified_time[i], age[i]) + BROWN \
+                          + "    {}".format(last_modified_file[i]) + RESET
+            print(result_line)
+        print()
 
-        print("How mamy jpg files: " + str(count_jpg))
-        print("How mamy pdf files: " + str(count_pdf))
+
+def get_dir_size(path='.'):
+    total = 0
+    with os.scandir(path) as it:
+        for entry in it:
+            if entry.is_file():
+                total += entry.stat().st_size
+            elif entry.is_dir():
+                total += get_dir_size(entry.path)
+    return total  # bytes
+
+
+def get_last_modify(folder, print_number):
+    file_name = list()
+    get_file_time = list()
+    for path, subdirs, files in os.walk(folder):
+        for name in files:
+            file_name.append(os.path.join(path, name))
+            get_file_time.append(os.path.getmtime(os.path.join(path, name)))
+
+    files = list(zip(file_name, get_file_time))
+    files = sorted(files, key=lambda x: x[1], reverse=True)
+    # last_modified_file = None if len(files) == 0 else files[0][0]
+
+    last_modified_file = list()
+    last_modified_time = list()
+    age = list()
+
+    for file in files[0:print_number]:
+        last_modified_file.append(file[0])
+        last_modified_time.append(datetime.fromtimestamp(
+            os.path.getmtime(file[0])).strftime('%Y-%m-%d %H:%M:%S'))
+
+        min_total = int(str(int((time.time() - os.path.getmtime(file[0])) // 60)))
+
+        day = min_total // (24 * 60)
+        hour = (min_total - day * 24 * 60) // 60
+        min = min_total - day * 24 * 60 - hour * 60
+
+        if day:
+            age.append("{day} {dayString} {hour} {hourString} {min} {minString} ago"
+                       .format(day=day, hour=hour, min=min,
+                               dayString=("days" if day > 1 else "day"),
+                               hourString=("hours" if hour > 1 else "hour"),
+                               minString=("minutes" if min > 1 else "minute"),
+                               )
+                       )
+        elif hour:
+            age.append("{hour} {hourString} {min} {minString} ago"
+                       .format(hour=hour, min=min,
+                               hourString=("hours" if hour > 1 else "hour"),
+                               minString=("minutes" if min > 1 else "minute"),
+                               )
+                       )
+        else:
+            age.append("{min} {minString} ago"
+                       .format(min=min,
+                               minString=("minutes" if min > 1 else "minute"),
+                               )
+                       )
+
+    # print(last_modified_file)
+
+    # get age file in minutes from now
+    # age = int((time.time() - os.path.getmtime(last_modified_file)) // 60)
+
+    # last_modified_time = datetime.fromtimestamp(os.path.getmtime(last_modified_file)).strftime('%Y-%m-%d %H:%M:%S')
+
+    return last_modified_file, last_modified_time, age

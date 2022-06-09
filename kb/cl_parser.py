@@ -681,21 +681,23 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
         default=False,
     )
 
-    # erase parser
+    # info parser
     info_parser.add_argument(
-        "query",
-        help="Filter search results by specified title",
-        default="",
-        nargs="?",
-        type=str,
-    )
-
-    info_parser.add_argument(
+        "-p",
         "--path",
-        help="Only show path of kb location",
+        help="Only show path of kb location and its configurations",
         action="store_true",
         dest="show_path",
         default=False,
+    )
+
+    info_parser.add_argument(
+        "-n",
+        "--number",
+        help="How many modified files will be printed",
+        dest="print_number",
+        default=5,
+        type=int,
     )
 
     # sync parser

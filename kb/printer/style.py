@@ -23,3 +23,5 @@ RESET = styler.reset()
 RED = '\033[1;31m'
 MAGENTA = '\033[95m'
 GREEN = '\033[92m'
+YELLOW = '\033[1;33m'
+BROWN = '\033[0;33m'
