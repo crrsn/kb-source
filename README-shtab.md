@@ -22,7 +22,7 @@ Automagic shell tab completion for Python CLI applications
 ### Create a bash_completion file manually
 
 	Run 'kb -s bash > kb' to generate a 'kb' file 
-	Cpy this 'kb' file to /etc/bash_completion.d/
+	Copy this 'kb' file to /etc/bash_completion.d/
 
 ### Re-open the terminal
 
