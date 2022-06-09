@@ -13,16 +13,16 @@ Automagic shell tab completion for Python CLI applications
 
 ### Install the shtab
 
-    https://github.com/iterative/shtab
+	https://github.com/iterative/shtab
 
-### Install kb tool - branch name: feature/shtab
+### Install kb tool
 
-	https://github.com/crrsn/kb-source/tree/feature/shtab
+	https://github.com/crrsn/kb-source/
 
 ### Create a bash_completion file manually
 
-	Run 'kb -s bash' to generate all configuration text
-    Copy these text as a file (name: kb) and put it to /etc/bash_completion.d/
+	Run 'kb -s bash > kb' to generate a 'kb' file 
+	Cpy this 'kb' file to /etc/bash_completion.d/
 
 ### Re-open the terminal
 
