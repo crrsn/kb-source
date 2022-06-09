@@ -86,7 +86,7 @@ def info(args: Dict[str, str], config: Dict[str, str]):
             else:
                 # exist extension, value+1
                 fileTypeCountDict[file_extension] += 1
-
+        # sort and print the list of file type counts
         d_view = [(v, k) for k, v in fileTypeCountDict.items()]
         d_view.sort(reverse=True)  # natively sort tuples by first element
         for v, k in d_view:
@@ -96,7 +96,7 @@ def info(args: Dict[str, str], config: Dict[str, str]):
         print("Total size: {:.2f} MB (with git)".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024))
 
         # --------------------------------------------------------------
-        print("\n" + UND + "Last Five Modified File Name & Modified Timestamp" + RESET)
+        print("\n" + UND + "Last {} Modified File Name & its Timestamp".format(args["print_number"]) + RESET)
         last_modified_file, last_modified_time, age = get_last_modify(config["PATH_KB_DATA"], args["print_number"])
 
         for i in range(0, len(last_modified_file)):
@@ -117,7 +117,7 @@ def get_dir_size(path='.'):
     return total  # bytes
 
 
-def get_last_modify(folder, print_number):
+def get_last_modify(folder, print_number=5):
     file_name = list()
     get_file_time = list()
     for path, subdirs, files in os.walk(folder):
@@ -139,38 +139,29 @@ def get_last_modify(folder, print_number):
             os.path.getmtime(file[0])).strftime('%Y-%m-%d %H:%M:%S'))
 
         min_total = int(str(int((time.time() - os.path.getmtime(file[0])) // 60)))
+        _day = min_total // (24 * 60)
+        _hour = (min_total - _day * 24 * 60) // 60
+        _min = min_total - _day * 24 * 60 - _hour * 60
 
-        day = min_total // (24 * 60)
-        hour = (min_total - day * 24 * 60) // 60
-        min = min_total - day * 24 * 60 - hour * 60
-
-        if day:
+        if _day:
             age.append("{day} {dayString} {hour} {hourString} {min} {minString} ago"
-                       .format(day=day, hour=hour, min=min,
-                               dayString=("days" if day > 1 else "day"),
-                               hourString=("hours" if hour > 1 else "hour"),
-                               minString=("minutes" if min > 1 else "minute"),
+                       .format(day=_day, hour=_hour, min=_min,
+                               dayString=("days" if _day > 1 else "day"),
+                               hourString=("hours" if _hour > 1 else "hour"),
+                               minString=("minutes" if _min > 1 else "minute"),
                                )
                        )
-        elif hour:
+        elif _hour:
             age.append("{hour} {hourString} {min} {minString} ago"
-                       .format(hour=hour, min=min,
-                               hourString=("hours" if hour > 1 else "hour"),
-                               minString=("minutes" if min > 1 else "minute"),
+                       .format(hour=_hour, min=_min,
+                               hourString=("hours" if _hour > 1 else "hour"),
+                               minString=("minutes" if _min > 1 else "minute"),
                                )
                        )
         else:
             age.append("{min} {minString} ago"
-                       .format(min=min,
-                               minString=("minutes" if min > 1 else "minute"),
+                       .format(min=_min,
+                               minString=("minutes" if _min > 1 else "minute"),
                                )
                        )
-
-    # print(last_modified_file)
-
-    # get age file in minutes from now
-    # age = int((time.time() - os.path.getmtime(last_modified_file)) // 60)
-
-    # last_modified_time = datetime.fromtimestamp(os.path.getmtime(last_modified_file)).strftime('%Y-%m-%d %H:%M:%S')
-
     return last_modified_file, last_modified_time, age
