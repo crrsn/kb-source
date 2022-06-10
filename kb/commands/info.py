@@ -14,7 +14,7 @@ from typing import Dict
 import kb.db as db
 import kb.initializer as initializer
 import kb.history as history
-from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, BROWN
+from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, BROWN, RED
 import os
 import time
 from datetime import datetime
@@ -69,12 +69,19 @@ def info(args: Dict[str, str], config: Dict[str, str]):
         # rows.sort(key=lambda x: x[1])
         artifacts = sorted(rows, key=lambda x: x.category)
         # --------------------------------------------------------------
-        print("\n" + UND + "KB Database Path" + RESET)
+        print("\n" + UND + "KB Database Path         " + RESET)
         print(BROWN + config["PATH_KB"] + RESET)
         # --------------------------------------------------------------
-        print("\n" + UND + "Database Information" + RESET)
-        print(BROWN + "Number of artifacts: " + str(len(artifacts)) + RESET)
+        print("\n" + UND + "Database Information                              " + RESET)
+        print(BROWN + "Total Number of artifacts: " + str(len(artifacts)) + RESET)
+        print(" Size: {:.2f} MB (only data folder)".format(get_dir_size(config["PATH_KB_DATA"]) / 1024 / 1024))
+        print(" Size: {:.2f} MB (with git)".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024))
+
         fileTypeCountDict = dict()
+        categoryListDict = dict()
+        totalCategory = 0
+        totalExtension = 0
+
         for artifact in artifacts:
             filename, file_extension = os.path.splitext(artifact.title)
             file_extension = file_extension.replace('.', '')
@@ -84,25 +91,43 @@ def info(args: Dict[str, str], config: Dict[str, str]):
             if file_extension not in fileTypeCountDict:
                 # new extension, create a key/value for it
                 fileTypeCountDict[file_extension] = 1
+                totalExtension += 1
             else:
                 # exist extension, value+1
                 fileTypeCountDict[file_extension] += 1
+
+            # analysis the category
+            if artifact.category not in categoryListDict:
+                categoryListDict[artifact.category] = 1
+                totalCategory += 1
+            else:
+                categoryListDict[artifact.category] += 1
+
+        # sort and print the list of file type counts
+        d_view = [(v, k) for k, v in categoryListDict.items()]
+        d_view.sort(reverse=True)  # natively sort tuples by first element
+        print(BROWN + 'Sort by Category ({}):'.format(totalCategory) + RESET)
+        # config the len of print for align
+        len_num = len(str(max(int(v) for v, k in d_view))) # find the number digits
+        len_name = max(len(k) for v, k in d_view) + 11  # len(RED+RESET) = 11
+        print_sort_by(d_view, len_num, len_name)
+
         # sort and print the list of file type counts
         d_view = [(v, k) for k, v in fileTypeCountDict.items()]
         d_view.sort(reverse=True)  # natively sort tuples by first element
-        for v, k in d_view:
-            print('  {}:\t{}'.format(k, v))
-
-        print("Total size: {:.2f} MB (only data folder)".format(get_dir_size(config["PATH_KB_DATA"]) / 1024 / 1024))
-        print("Total size: {:.2f} MB (with git)".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024))
+        print(BROWN + 'Sort by Extension ({}):'.format(totalExtension) + RESET)
+        # config the len of print for align
+        len_num = len(str(max(int(v) for v, k in d_view))) # find the number digits
+        len_name = max(len(k) for v, k in d_view) + 11  # len(RED+RESET) = 11
+        print_sort_by(d_view, len_num, len_name)
 
         # --------------------------------------------------------------
-        print("\n" + UND + "[ ID ] Last {} Modified File Name & its Timestamp".format(args["print_number"]) + RESET)
+        print("\n" + UND + "   [ ID ] Last {} Modified File Name & its Timestamp                 ".format(args["print_number"]) + RESET)
         last_modified_file, last_modified_time, age = get_last_modify(config["PATH_KB_DATA"], args["print_number"])
 
         for i in range(0, len(last_modified_file)):
-            result_line = "[" + str(i).rjust(3) + " ] {} ({})\n".format(last_modified_time[i], age[i]) + BROWN \
-                          + "        {}".format(last_modified_file[i]) + RESET
+            result_line = " - [" + str(i).rjust(3) + " ] {} ({})\n".format(last_modified_time[i], age[i]) + BROWN \
+                          + "          {}".format(last_modified_file[i]) + RESET
             print(result_line)
         print()
 
@@ -114,7 +139,6 @@ def info(args: Dict[str, str], config: Dict[str, str]):
                     if art.path == result.split('/data/')[1]:
                         hfile.write("{},{}\n".format(view_id, art.id))
 
-
 def get_dir_size(path='.'):
     total = 0
     with os.scandir(path) as it:
@@ -124,7 +148,6 @@ def get_dir_size(path='.'):
             elif entry.is_dir():
                 total += get_dir_size(entry.path)
     return total  # bytes
-
 
 def get_last_modify(folder, print_number=5):
     file_name = list()
@@ -174,3 +197,21 @@ def get_last_modify(folder, print_number=5):
                                )
                        )
     return last_modified_file, last_modified_time, age
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i+n]
+
+def print_sort_by(d_view, len_num, len_name):
+    # convert data to pairs for print two column
+    pairs = chunks(d_view, 2)
+    for x in pairs:
+        x1 = str(x[0][0])
+        x2 = RED + str(x[0][1]) + RESET
+        if len(x) > 1:
+            x3 = str(x[1][0])
+            x4 = RED + str(x[1][1]) + RESET
+            print("   {} {}  {} {}".format(x1.rjust(len_num), x2.ljust(len_name), x3.rjust(len_num), x4.ljust(len_name)))
+        else:
+            print("   {} {} ".format(x1.rjust(len_num), x2.ljust(len_name)))
