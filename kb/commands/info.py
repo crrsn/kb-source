@@ -18,6 +18,7 @@ from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, BROWN, RED
 import os
 import time
 from datetime import datetime
+from kb import __version__
 
 
 def info(args: Dict[str, str], config: Dict[str, str]):
@@ -68,14 +69,13 @@ def info(args: Dict[str, str], config: Dict[str, str]):
 
         # rows.sort(key=lambda x: x[1])
         artifacts = sorted(rows, key=lambda x: x.category)
+
         # --------------------------------------------------------------
-        print("\n" + UND + "KB Database Path         " + RESET)
-        print(BROWN + config["PATH_KB"] + RESET)
-        # --------------------------------------------------------------
-        print("\n" + UND + "Database Information                              " + RESET)
-        print(BROWN + "Total Number of artifacts: " + str(len(artifacts)) + RESET)
-        print(" Size: {:.2f} MB (only data folder)".format(get_dir_size(config["PATH_KB_DATA"]) / 1024 / 1024))
-        print(" Size: {:.2f} MB (with git)".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024))
+        print( "\n" + UND + "KB Database Information " + "(Version: kb " + __version__ + ")" + RESET)
+        print(BROWN + "\nTotal Number of artifacts: " + str(len(artifacts)) + RESET)
+        print(" Size: {:.2f} MB ({})".format(get_dir_size(config["PATH_KB_DATA"]) / 1024 / 1024, config["PATH_KB_DATA"]))
+        print(" Size: {:.2f} MB ({})".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024, config["PATH_KB"]))
+        print()
 
         fileTypeCountDict = dict()
         categoryListDict = dict()
@@ -115,7 +115,7 @@ def info(args: Dict[str, str], config: Dict[str, str]):
         # sort and print the list of file type counts
         d_view = [(v, k) for k, v in fileTypeCountDict.items()]
         d_view.sort(reverse=True)  # natively sort tuples by first element
-        print(BROWN + 'Sort by Extension ({}):'.format(totalExtension) + RESET)
+        print(BROWN + '\nSort by Extension ({}):'.format(totalExtension) + RESET)
         # config the len of print for align
         len_num = len(str(max(int(v) for v, k in d_view))) # find the number digits
         len_name = max(len(k) for v, k in d_view) + 11  # len(RED+RESET) = 11
