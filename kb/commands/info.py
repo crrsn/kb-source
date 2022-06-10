@@ -13,6 +13,7 @@ kb show info command module
 from typing import Dict
 import kb.db as db
 import kb.initializer as initializer
+import kb.history as history
 from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, BROWN
 import os
 import time
@@ -96,14 +97,22 @@ def info(args: Dict[str, str], config: Dict[str, str]):
         print("Total size: {:.2f} MB (with git)".format(get_dir_size(config["PATH_KB"]) / 1024 / 1024))
 
         # --------------------------------------------------------------
-        print("\n" + UND + "Last {} Modified File Name & its Timestamp".format(args["print_number"]) + RESET)
+        print("\n" + UND + "[ ID ] Last {} Modified File Name & its Timestamp".format(args["print_number"]) + RESET)
         last_modified_file, last_modified_time, age = get_last_modify(config["PATH_KB_DATA"], args["print_number"])
 
         for i in range(0, len(last_modified_file)):
-            result_line = "[{}] {} ({})\n".format(i+1, last_modified_time[i], age[i]) + BROWN \
-                          + "    {}".format(last_modified_file[i]) + RESET
+            result_line = "[" + str(i).rjust(3) + " ] {} ({})\n".format(last_modified_time[i], age[i]) + BROWN \
+                          + "        {}".format(last_modified_file[i]) + RESET
             print(result_line)
         print()
+
+        # Write to history file
+        with open(config["PATH_KB_HIST"], "w") as hfile:
+            hfile.write("view_id,db_id\n")
+            for view_id, result in enumerate(last_modified_file):
+                for art in artifacts:
+                    if art.path == result.split('/data/')[1]:
+                        hfile.write("{},{}\n".format(view_id, art.id))
 
 
 def get_dir_size(path='.'):
