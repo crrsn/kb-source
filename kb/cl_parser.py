@@ -362,6 +362,14 @@ def parse_args(args: Sequence[str]) -> argparse.Namespace:
         dest="no_color",
         default=False,
     )
+    view_parser.add_argument(
+        "-p",
+        "--print-path",
+        help="Print the path of this artifact",
+        action="store_true",
+        dest="print-path",
+        default=False,
+    )
 
     # grep parser
     grep_parser.add_argument(

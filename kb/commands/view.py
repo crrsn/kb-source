@@ -57,28 +57,30 @@ def view(args: Dict[str, str], config: Dict[str, str]):
 
     color_mode = not args["no_color"]
     if args["id"]:
-        view_by_id(args["id"], config, args["editor"], color_mode)
+        view_by_id(args["id"], config, args["editor"], color_mode, args["print-path"])
     elif args["title"]:
         view_by_name(
-            args["title"], args["category"], config, args["editor"], color_mode
+            args["title"], args["category"], config, args["editor"], color_mode, args["print-path"]
         )
     elif args["nameid"]:
         if args["nameid"].isdigit():
-            view_by_id(args["nameid"], config, args["editor"], color_mode)
+            view_by_id(args["nameid"], config, args["editor"], color_mode, args["print-path"])
         else:
             view_by_name(
                 args["nameid"],
                 args["category"],
                 config,
                 args["editor"],
-                color_mode)
+                color_mode,
+                args["print-path"])
 
 
 def view_by_id(id_artifact: int,
                config: Dict[str,
                             str],
                open_editor: bool,
-               color_mode: bool):
+               color_mode: bool,
+               print_path: bool):
     """
     View the content of an artifact by id.
 
@@ -107,6 +109,10 @@ def view_by_id(id_artifact: int,
     category_path = Path(config["PATH_KB_DATA"], artifact.category)
     artifact_path = Path(category_path, artifact.title)
 
+    if print_path:
+        print(artifact_path)
+        sys.exit(0)
+
     if open_editor:
         tmpfname = fs.get_temp_filepath()
         fs.copy_file(artifact_path, tmpfname)
@@ -131,7 +137,7 @@ def view_by_name(
     config: Dict[str, str],
     open_editor: bool,
     color_mode: bool,
-):
+    print_path: bool):
     """
     View the content of an artifact by name, that is title/category
 
@@ -157,6 +163,10 @@ def view_by_name(
         artifact = artifacts.pop()
         category_path = Path(config["PATH_KB_DATA"], artifact.category)
         artifact_path = Path(category_path, artifact.title)
+
+        if print_path:
+            print(artifact_path)
+            sys.exit(0)
 
         if open_editor:
             tmpfname = fs.get_temp_filepath()
