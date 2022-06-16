@@ -51,6 +51,14 @@ def info(args: Dict[str, str], config: Dict[str, str]):
     # 'PATH_KB_MARKDOWN_TEMPLATE': '/home/leo/.local/share/kb/templates/markdown', 'DB_SCHEMA_VERSION': 1,
     # 'EDITOR': 'vim', 'INITIAL_CATEGORIES': ['default']}
 
+    # http://www.network-science.de/ascii/
+    # Font: ogre   Reflection: no   Adjustment: left   Stretch: no      Width: 80	 Text: kb
+    print("     _    _       _        __       ")
+    print("    | | _| |__   (_)_ __  / _| ___  ")
+    print("    | |/ / '_ \  | | '_ \| |_ / _ \ ")
+    print("    |   <| |_) | | | | | |  _| (_) |")
+    print("    |_|\_\_.__/  |_|_| |_|_|  \___/ ")
+
     if args["show_path"]:
         print(BROWN + "\nPath of KB folder: " + RESET + config["PATH_KB"])
         print(BROWN + "Path of KB Database File: " + RESET + config["PATH_KB_DB"])
