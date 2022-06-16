@@ -11,7 +11,7 @@ kb view command module
 :License: GPLv3 (see /LICENSE).
 """
 
-# import os
+import os
 # import platform
 # import tempfile
 
@@ -29,6 +29,7 @@ import kb.opener as opener
 import kb.viewer as viewer
 from kb.config import get_markers
 from kb.entities.artifact import Artifact
+from kb.printer.style import ALT_BGROUND, BOLD, UND, RESET, RED, MAGENTA, GREEN
 
 
 def view(args: Dict[str, str], config: Dict[str, str]):
@@ -55,6 +56,7 @@ def view(args: Dict[str, str], config: Dict[str, str]):
     # Check initialization
     initializer.init(config)
 
+    print(UND + ' ' * os.get_terminal_size().columns + RESET)
     color_mode = not args["no_color"]
     if args["id"]:
         view_by_id(args["id"], config, args["editor"], color_mode, args["print-path"])
@@ -73,6 +75,7 @@ def view(args: Dict[str, str], config: Dict[str, str]):
                 args["editor"],
                 color_mode,
                 args["print-path"])
+    print(UND + ' ' * os.get_terminal_size().columns + RESET + '\n')
 
 
 def view_by_id(id_artifact: int,
@@ -109,8 +112,13 @@ def view_by_id(id_artifact: int,
     category_path = Path(config["PATH_KB_DATA"], artifact.category)
     artifact_path = Path(category_path, artifact.title)
 
+    _title = 'Title: ' + artifact.title
+    _space = int(((os.get_terminal_size().columns) - len(_title)) / 2)
+    print(ALT_BGROUND + ' ' * _space + _title + ' ' * _space + RESET + '\n')
+
     if print_path:
         print(artifact_path)
+        print(UND + ' ' * os.get_terminal_size().columns + RESET + '\n')
         sys.exit(0)
 
     if open_editor:
@@ -132,12 +140,12 @@ def view_by_id(id_artifact: int,
 
 
 def view_by_name(
-    title: str,
-    category: str,
-    config: Dict[str, str],
-    open_editor: bool,
-    color_mode: bool,
-    print_path: bool):
+        title: str,
+        category: str,
+        config: Dict[str, str],
+        open_editor: bool,
+        color_mode: bool,
+        print_path: bool):
     """
     View the content of an artifact by name, that is title/category
 
@@ -164,8 +172,13 @@ def view_by_name(
         category_path = Path(config["PATH_KB_DATA"], artifact.category)
         artifact_path = Path(category_path, artifact.title)
 
+        _title = 'Title: ' + artifact.title
+        _space = int(((os.get_terminal_size().columns) - len(_title)) / 2)
+        print(ALT_BGROUND + ' ' * _space + _title + ' ' * _space + RESET + '\n')
+
         if print_path:
             print(artifact_path)
+            print(UND + ' ' * os.get_terminal_size().columns + RESET + '\n')
             sys.exit(0)
 
         if open_editor:
